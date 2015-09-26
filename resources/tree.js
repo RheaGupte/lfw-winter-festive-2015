@@ -1,4 +1,4 @@
-( function ( d3, tr, document ) {
+( function ( d3, tr, document, $ ) {
 
 tr.draw = function ( data ) {
 
@@ -32,8 +32,15 @@ tr.draw = function ( data ) {
 
 	node = root = data;
 
-	var nodes = treemap.nodes(root)
-		.filter(function(d) { return !d.children; });
+	var nodes = treemap.nodes( root ).filter( function( d ) {
+		return !d.children;
+	} );
+
+	var parents = treemap.nodes( root ).filter( function( d ) {
+		return d.children;
+	} );
+
+
 
 	var cell = svg.selectAll("g")
 		.data(nodes)
@@ -43,18 +50,18 @@ tr.draw = function ( data ) {
 		.on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
 
 	var images = cell.append("svg:image")
-		.attr("width", function(d) { return d.dx - 1; })
-		.attr("height", function(d) { return d.dy - 1; })
+		.attr("width", function(d) { return d.dx; })
+		.attr("height", function(d) { return d.dy; })
 		.attr("preserveAspectRatio", "xMidYMid slice" )
 		.attr("xlink:href", function(d) {
 			return "resources/images_small/" + d.url;
 		} );
 
 	cell.append("svg:rect")
-		.attr("width", function(d) { return d.dx - 1; })
-		.attr("height", function(d) { return d.dy - 1; })
+		.attr("width", function(d) { return d.dx; })
+		.attr("height", function(d) { return d.dy; })
 		.on( 'mouseover', function ( d ) {
-			if ( this.getAttribute( "width" ) < 300 ) {
+			if ( this.getAttribute( "width" ) < 200 ) {
 				return false;
 			}
 			var image = images.filter( function ( image ) {
@@ -72,6 +79,16 @@ tr.draw = function ( data ) {
 				return "resources/images_small/" + d.url;
 			} );
 		} )
+		.on( 'dblclick', function ( d ) {
+			var image = images.filter( function ( image ) {
+				return image.url === d.url
+			} );
+
+			// Zoom in further if we are already showing a large image
+			if ( image.attr( 'xlink:href' ).indexOf( 'small' ) < 0 ) {
+				showFull( d );
+			}
+		} )
 		.style("fill", function(d) { return color(d.parent.name); });
 
 
@@ -80,15 +97,38 @@ tr.draw = function ( data ) {
 		.attr("y", function(d) { return d.dy / 2; })
 		.attr("dy", ".35em")
 		.attr("text-anchor", "middle")
-		.text(function(d) { return d.name; })
-		.style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
+		.attr( 'class', 'child-text' )
+		.text(function(d) { return d.designer; })
+		.style( 'opacity', 0 );
 
-	d3.select(window).on("click", function() { zoom(root); });
+	var parentCell = svg.selectAll( 'g.parent' )
+		.data( parents )
+		.enter().append( 'svg:g' )
+		.attr( 'class', 'parent' )
+		.attr( 'transform', function( d ) {
+			return 'translate(' + d.x + ',' + d.y + ')';
+		} );
 
-	d3.select("select").on("change", function() {
-		treemap.value(this.value == "size" ? size : count).nodes(root);
-		zoom(node);
-	});
+	parentCell.append("svg:text")
+		.attr( 'x', function( d ) {
+			return d.dx / 2;
+		} )
+		.attr( 'y', function( d ) {
+			return d.dy / 2;
+		} )
+		.attr( 'class', 'parent-text' )
+		.attr( 'dy', '.35em' ) // TODO: Magic number
+		.attr( 'text-anchor', 'middle' )
+		.text( function( d ) {
+			if ( d.name === 'trends' ) {
+				return;
+			}
+			return d.name;
+		} )
+		.style( 'opacity', 1 );
+
+
+	svg.on("click", function() { zoom(root); });
 
 	function size(d) {
 		return d.size;
@@ -103,29 +143,88 @@ tr.draw = function ( data ) {
 			x.domain([d.x, d.x + d.dx]);
 			y.domain([d.y, d.y + d.dy]);
 
-		var t = svg.selectAll("g.cell").transition()
-			.duration(d3.event.altKey ? 7500 : 750)
-			.attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+		var t = svg.selectAll( 'g.cell' )
+			.transition()
+			.duration( d3.event.altKey ? 7500 : 750 )
+			.attr( 'transform' , function( d ) {
+				return 'translate(' + x( d.x ) + ',' + y( d.y ) + ')';
+		} );
 
 		t.select("image")
-			.attr("width", function(d) { return kx * d.dx - 1; })
-			.attr("height", function(d) { return ky * d.dy - 1; });
+			.attr("width", function(d) { return kx * d.dx; })
+			.attr("height", function(d) { return ky * d.dy; });
 
 
 		t.select("rect")
-			.attr("width", function(d) { return kx * d.dx - 1; })
-			.attr("height", function(d) { return ky * d.dy - 1; })
+			.attr("width", function(d) { return kx * d.dx; })
+			.attr("height", function(d) { return ky * d.dy; })
 
-		t.select("text")
-			.attr("x", function(d) { return kx * d.dx / 2; })
-			.attr("y", function(d) { return ky * d.dy / 2; })
-			.style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
+		t.select( 'text' )
+			.attr( 'x', function( d ) {
+				return kx * d.dx / 2;
+			} )
+			.attr( 'y', function( d ) {
+				return ky * d.dy / 2;
+			} )
+
+		// Show designer name if zoomed in
+		if ( d.name === 'trends' ) {
+			t.select( 'text' ).style( 'opacity', 0 );
+		} else {
+			t.select( 'text' ).style( 'opacity', 1 );
+		}
+
+
+		// Parent cells
+		var t = svg.selectAll( 'g.parent' )
+			.transition()
+			.duration( d3.event.altKey ? 7500 : 750 )
+			.attr( 'transform' , function( d ) {
+				return 'translate(' + x( d.x )  + ',' + y( d.y ) + ')';
+			} );
+
+		// Move trend name to top if zoomed in
+		if ( d.name === 'trends' ) {
+			t.select( 'text' )
+				.attr( 'x', function( d ) {
+					return d.dx / 2;
+				} )
+				.attr( 'y', function( d ) {
+					return d.dy / 2;
+				} )
+		} else {
+			t.select( 'text' )
+				.attr( 'x', function( d ) {
+					return kx * d.dx / 2;
+				} )
+				.attr( 'y', function( d ) {
+					return 40;
+				} );
+		}
+
 
 		node = d;
 		d3.event.stopPropagation();
+	}
+
+	function showFull( d ) {
+		$( 'body' ).append(
+			$( '<div>' )
+				.addClass( 'image-container' )
+				.css( 'background-image', 'url("resources/images/' + d.url + '")' )
+				.text( d.designer )
+				.on( 'click', function ( e ) {
+					$( this ).fadeOut( 'fast', function () {
+						$( this ).remove();
+					} );
+					e.stopPropagation();
+					return false;
+				} )
+				.fadeIn()
+		);
 	}
 };
 
 
 
-} ( d3, tr, document ) );
+} ( d3, tr, document, jQuery ) );

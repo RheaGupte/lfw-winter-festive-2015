@@ -14,18 +14,46 @@ body {
 	margin: 0;
 }
 
-text {
-	font: 15px 'Didot';
+text.parent-text {
+	font: 13px 'Didot';
+	text-shadow: 0px 0px 2px #000;
 	text-transform: uppercase;
 	fill: #fff
 }
 
+text.child-text {
+	font: 12px 'Didot';
+	text-shadow: 0px 0px 10px #000;
+	text-transform: capitalize;
+	fill: #fff
+}
+
+
 rect {
 	fill: none;
 	background-size: cover;
-	opacity: 0.6;
+	opacity: 0.7;
 }
 
 rect:hover {
 	opacity: 0;
+}
+
+
+div.image-container {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	position: absolute;
+	background-color: #000;
+	background-size: contain;
+	background-position: center center;
+	background-repeat: no-repeat;
+	color: #fff;
+	text-align: center;
+	font: 20px 'Didot';
+	text-shadow: 0px 0px 2px #000;
+	text-transform: capitalize;
+	padding-top: 50%;
 }
