@@ -50,7 +50,7 @@ body {
 }
 
 text.parent-text {
-	font: 13px 'Didot';
+	font-size: 11px;
 	text-shadow: 0px 0px 2px #000;
 	text-transform: uppercase;
 	fill: #fff;
@@ -58,7 +58,7 @@ text.parent-text {
 }
 
 text.child-text {
-	font: 12px 'Didot';
+	font-size: 12px;
 	text-shadow: 0px 0px 10px #000;
 	text-transform: capitalize;
 	fill: #fff;
@@ -70,6 +70,7 @@ rect {
 	fill: none;
 	background-size: cover;
 	opacity: 0.7;
+	shape-rendering: crispEdges;
 }
 
 rect.more-filter {

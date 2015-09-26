@@ -44,7 +44,7 @@ tr.draw = function ( data ) {
 			'#bdbdbd',
 			'#d9d9d9'
 		] ).domain( [
-			'oriental',
+			'psychedelic',
 			'statement beauty',
 			'artsy',
 			'checks',
@@ -64,7 +64,10 @@ tr.draw = function ( data ) {
 			'drapes',
 			'high low hem',
 			'capes',
-			'typography'
+			'typography',
+			'pastel',
+			'sports luxe',
+			'long coat'
 		] ),
 		root,
 		node;
