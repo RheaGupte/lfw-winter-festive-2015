@@ -61,7 +61,8 @@ tr.draw = function ( data ) {
 		.attr("width", function(d) { return d.dx; })
 		.attr("height", function(d) { return d.dy; })
 		.on( 'mouseover', function ( d ) {
-			if ( this.getAttribute( "width" ) < 200 ) {
+			// TODO
+			if ( this.getAttribute( "width" ) < 100 ) {
 				return false;
 			}
 			var image = images.filter( function ( image ) {
