@@ -147,7 +147,6 @@ tr.draw = function ( data ) {
 	}
 
 	function zoom(d) {
-		console.log( 'zoo' );
 		var kx = w / d.dx, ky = h / d.dy;
 			x.domain([d.x, d.x + d.dx]);
 			y.domain([d.y, d.y + d.dy]);

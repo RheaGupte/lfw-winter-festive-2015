@@ -10,7 +10,7 @@ onlyfiles = [ f for f in listdir(mypath) if isfile(join(mypath,f)) ]
 data = [ [ "trend", "designer", "score", "filename" ] ]
 for filename in onlyfiles:
 	trend = filename.split( '_' )[ 0 ]
-        designer = filename.split( '_' )[ 1 ].split( 'at' )[ 0 ]
+        designer = filename.split( '_' )[ 1 ].split( ' at ' )[ 0 ]
 	score = 1
 	data.append( [ trend, designer, score, filename ] )
 

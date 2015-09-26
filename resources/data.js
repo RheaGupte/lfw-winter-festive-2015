@@ -21,6 +21,11 @@ tr.traverseData = function ( data ) {
 			url: trendData.filename,
 			designer: trendData.designer
 		} );
+
+		if ( trendData.designer.indexOf( '.jpg' ) > -1 ) {
+			console.log( trendData.filename );
+		}
+
 	}
 
 	// Move trend to the main tree
@@ -30,6 +35,7 @@ tr.traverseData = function ( data ) {
 			name: trendKey,
 			children: []
 		}
+
 		for ( var lookIndex in looks ) {
 			var look = looks[ lookIndex ];
 			child.children.push( look );
