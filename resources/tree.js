@@ -1,79 +1,46 @@
-window.onload = function () {
+( function ( d3, tr, document ) {
 
-var body = document.body,
-    html = document.documentElement;
+tr.draw = function ( data ) {
 
-var w = Math.max( body.scrollWidth, body.offsetWidth,
-                       html.clientWidth, html.scrollWidth, html.offsetWidth ),
-    h = Math.max( body.scrollHeight, body.offsetHeight,
-                       html.clientHeight, html.scrollHeight, html.offsetHeight ),
-    x = d3.scale.linear().range([0, w]),
-    y = d3.scale.linear().range([0, h]),
-    color = d3.scale.category20(),
-    root,
-    node;
+	var body = document.body,
+		html = document.documentElement;
 
-var treemap = d3.layout.treemap()
-    .round(false)
-    .size([w, h])
-    .sticky(true)
-    .value(function(d) { return d.size; });
+	var w = Math.max( body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth ),
+		h = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight ),
+		x = d3.scale.linear().range([0, w]),
+		y = d3.scale.linear().range([0, h]),
+		color = d3.scale.category20(),
+		root,
+		node;
 
-var svg = d3.select("#chart").append("div")
-    .attr("class", "chart")
-    .style("width", w + "px")
-    .style("height", h + "px")
-  .append("svg:svg")
-    .attr("width", w)
-    .attr("height", h)
-  .append("svg:g")
-    .attr("transform", "translate(.5,.5)");
+	var treemap = d3.layout.treemap()
+		.round(false)
+		.size([w, h])
+		.sticky(true)
+		.value(function(d) { return d.size; });
+
+	var svg = d3.select("#chart").append("div")
+		.attr("class", "chart")
+		.style("width", w + "px")
+		.style("height", h + "px")
+		.append("svg:svg")
+			.attr("width", w)
+			.attr("height", h)
+			.append("svg:g")
+				.attr("transform", "translate(.5,.5)");
 
 
-d3.csv("resources/trends.csv", function(data) {
-	var tree = {
-		name: 'trends',
-		children: []
-	};
-	var trends = {};
-	for ( trend in data ) {
-		var trendData = data[ trend ];
-		trends[ trendData.trend ] = trends[ trendData.trend ] || [];
-		trends[ trendData.trend ].push( {
-			name: trendData.trend,
-			size: trendData.score,
-			url: trendData.filename,
-			designer: trendData.designer
-		} );
-	}
+	node = root = data;
 
-	for ( trend in trends ) {
-		var looksInTrend = trends[ trend ];
-		var child = {
-			name: trend,
-			children: []
-		}
-		for ( var lookIndex in looksInTrend ) {
-			var look = looksInTrend[ lookIndex ];
-			child.children.push( look );
-		}
-		tree.children.push( child );
-	}
-	draw( tree );
-} );
+	var nodes = treemap.nodes(root)
+		.filter(function(d) { return !d.children; });
 
-var draw = function ( data ) {
-  node = root = data;
-
-  var nodes = treemap.nodes(root)
-      .filter(function(d) { return !d.children; });
-
-  var cell = svg.selectAll("g")
-      .data(nodes)
-    .enter().append("svg:g")
-      .attr("class", "cell")
-      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-      .on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
+	var cell = svg.selectAll("g")
+		.data(nodes)
+		.enter().append("svg:g")
+		.attr("class", "cell")
+		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+		.on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
 
 	var images = cell.append("svg:image")
 		.attr("width", function(d) { return d.dx - 1; })
@@ -108,56 +75,57 @@ var draw = function ( data ) {
 		.style("fill", function(d) { return color(d.parent.name); });
 
 
-  cell.append("svg:text")
-      .attr("x", function(d) { return d.dx / 2; })
-      .attr("y", function(d) { return d.dy / 2; })
-      .attr("dy", ".35em")
-      .attr("text-anchor", "middle")
-      .text(function(d) { return d.name; })
-      .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
+	cell.append("svg:text")
+		.attr("x", function(d) { return d.dx / 2; })
+		.attr("y", function(d) { return d.dy / 2; })
+		.attr("dy", ".35em")
+		.attr("text-anchor", "middle")
+		.text(function(d) { return d.name; })
+		.style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
 
-  d3.select(window).on("click", function() { zoom(root); });
+	d3.select(window).on("click", function() { zoom(root); });
 
-  d3.select("select").on("change", function() {
-    treemap.value(this.value == "size" ? size : count).nodes(root);
-    zoom(node);
-  });
+	d3.select("select").on("change", function() {
+		treemap.value(this.value == "size" ? size : count).nodes(root);
+		zoom(node);
+	});
+
+	function size(d) {
+		return d.size;
+	}
+
+	function count(d) {
+		return 1;
+	}
+
+	function zoom(d) {
+		var kx = w / d.dx, ky = h / d.dy;
+			x.domain([d.x, d.x + d.dx]);
+			y.domain([d.y, d.y + d.dy]);
+
+		var t = svg.selectAll("g.cell").transition()
+			.duration(d3.event.altKey ? 7500 : 750)
+			.attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+		t.select("image")
+			.attr("width", function(d) { return kx * d.dx - 1; })
+			.attr("height", function(d) { return ky * d.dy - 1; });
+
+
+		t.select("rect")
+			.attr("width", function(d) { return kx * d.dx - 1; })
+			.attr("height", function(d) { return ky * d.dy - 1; })
+
+		t.select("text")
+			.attr("x", function(d) { return kx * d.dx / 2; })
+			.attr("y", function(d) { return ky * d.dy / 2; })
+			.style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
+
+		node = d;
+		d3.event.stopPropagation();
+	}
 };
 
-function size(d) {
-  return d.size;
-}
-
-function count(d) {
-  return 1;
-}
-
-function zoom(d) {
-  var kx = w / d.dx, ky = h / d.dy;
-  x.domain([d.x, d.x + d.dx]);
-  y.domain([d.y, d.y + d.dy]);
-
-  var t = svg.selectAll("g.cell").transition()
-      .duration(d3.event.altKey ? 7500 : 750)
-      .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
-	t.select("image")
-		.attr("width", function(d) { return kx * d.dx - 1; })
-		.attr("height", function(d) { return ky * d.dy - 1; });
 
 
-  t.select("rect")
-      .attr("width", function(d) { return kx * d.dx - 1; })
-      .attr("height", function(d) { return ky * d.dy - 1; })
-
-  t.select("text")
-      .attr("x", function(d) { return kx * d.dx / 2; })
-      .attr("y", function(d) { return ky * d.dy / 2; })
-      .style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
-
-  node = d;
-  d3.event.stopPropagation();
-}
-
-
-};
+} ( d3, tr, document ) );
