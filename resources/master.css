@@ -1,12 +1,47 @@
 body {
 	margin: 0;
 	padding: 0;
+	font-family: 'Didot';
+}
+
+#actionbar {
+	top: 0;
+	height: 52px;
+	background: #000;
+	color: #fff;
+	padding: 0.7em;
+	font-size: 1.2em;
+}
+
+#actionbar h1 {
+	display: inline-block;
+	text-transform: capitalize;
+	margin: 0;
+	font-size: 1em;
+}
+
+#actionbar span {
+	font-size: 0.5em;
+	color: #666;
+}
+
+#actionbar a {
+	color: #fff;
+	text-decoration: none;
+	float: right;
+	font-size: 1.5em;
+	font-weight: bold;
+	font-family: Helvetica, Arial, sans-serif;
+	margin-top: -8px;
+	display: none;
 }
 
 #chart {
-	margin: 0;
-	height: 100%;
-	width: 100%;
+	top: 50px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	position: absolute;
 }
 
 .chart {
@@ -18,14 +53,16 @@ text.parent-text {
 	font: 13px 'Didot';
 	text-shadow: 0px 0px 2px #000;
 	text-transform: uppercase;
-	fill: #fff
+	fill: #fff;
+	pointer-events: none;
 }
 
 text.child-text {
 	font: 12px 'Didot';
 	text-shadow: 0px 0px 10px #000;
 	text-transform: capitalize;
-	fill: #fff
+	fill: #fff;
+	pointer-events: none;
 }
 
 
@@ -35,13 +72,21 @@ rect {
 	opacity: 0.7;
 }
 
+rect.more-filter {
+	opacity: 0.7;
+}
+
+rect.less-filter {
+	opacity: 0.3;
+}
+
 rect:hover {
 	opacity: 0;
 }
 
 
 div.image-container {
-	top: 0;
+	top: 50px;
 	left: 0;
 	right: 0;
 	bottom: 0;
@@ -50,10 +95,20 @@ div.image-container {
 	background-size: contain;
 	background-position: center center;
 	background-repeat: no-repeat;
-	color: #fff;
-	text-align: center;
-	font: 20px 'Didot';
-	text-shadow: 0px 0px 2px #000;
-	text-transform: capitalize;
-	padding-top: 50%;
+}
+
+@media only screen and (max-device-width: 480px) {
+	#actionbar {
+		height: 155px;
+		font-size: 3em;
+		padding: 1em;
+	}
+
+	#chart {
+		top: 150px;
+	}
+
+	div.image-container {
+		top: 150px;
+	}
 }

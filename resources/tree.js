@@ -2,11 +2,8 @@
 
 tr.draw = function ( data ) {
 
-	var body = document.body,
-		html = document.documentElement;
-
-	var w = Math.max( body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth ),
-		h = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight ),
+	var w = $( '#chart' ).width(),
+		h = $( '#chart' ).height(),
 		x = d3.scale.linear().range([0, w]),
 		y = d3.scale.linear().range([0, h]),
 		color = d3.scale.category20(),
@@ -47,7 +44,10 @@ tr.draw = function ( data ) {
 		.enter().append("svg:g")
 		.attr("class", "cell")
 		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-		.on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
+		.on( 'click', function( d ) {
+			d3.event.stopPropagation();
+			return zoom( node == d.parent ? root : d.parent );
+		});
 
 	var images = cell.append("svg:image")
 		.attr("width", function(d) { return d.dx; })
@@ -79,7 +79,9 @@ tr.draw = function ( data ) {
 				return "resources/images_small/" + d.url;
 			} );
 		} )
-		.on( 'dblclick', function ( d ) {
+		.on( 'click', function ( d ) {
+			d3.event.stopPropagation();
+
 			var image = images.filter( function ( image ) {
 				return image.url === d.url
 			} );
@@ -87,6 +89,9 @@ tr.draw = function ( data ) {
 			// Zoom in further if we are already showing a large image
 			if ( image.attr( 'xlink:href' ).indexOf( 'small' ) < 0 ) {
 				showFull( d );
+			} else {
+				return zoom( node == d.parent ? root : d.parent );
+
 			}
 		} )
 		.style("fill", function(d) { return color(d.parent.name); });
@@ -128,7 +133,10 @@ tr.draw = function ( data ) {
 		.style( 'opacity', 1 );
 
 
-	svg.on("click", function() { zoom(root); });
+//	svg.on( 'click', function() {
+//		d3.event.stopPropagation();
+//		zoom( root );
+//	} );
 
 	function size(d) {
 		return d.size;
@@ -139,13 +147,14 @@ tr.draw = function ( data ) {
 	}
 
 	function zoom(d) {
+		console.log( 'zoo' );
 		var kx = w / d.dx, ky = h / d.dy;
 			x.domain([d.x, d.x + d.dx]);
 			y.domain([d.y, d.y + d.dy]);
 
 		var t = svg.selectAll( 'g.cell' )
 			.transition()
-			.duration( d3.event.altKey ? 7500 : 750 )
+			.duration( 750 )//d3.event.altKey ? 7500 : 750 )
 			.attr( 'transform' , function( d ) {
 				return 'translate(' + x( d.x ) + ',' + y( d.y ) + ')';
 		} );
@@ -157,7 +166,7 @@ tr.draw = function ( data ) {
 
 		t.select("rect")
 			.attr("width", function(d) { return kx * d.dx; })
-			.attr("height", function(d) { return ky * d.dy; })
+			.attr("height", function(d) { return ky * d.dy; });
 
 		t.select( 'text' )
 			.attr( 'x', function( d ) {
@@ -168,9 +177,12 @@ tr.draw = function ( data ) {
 			} )
 
 		// Show designer name if zoomed in
+		// Reduce color filter if zoomed in
 		if ( d.name === 'trends' ) {
+			svg.selectAll( 'rect' ).attr( 'class', 'more-filter' );
 			t.select( 'text' ).style( 'opacity', 0 );
 		} else {
+			svg.selectAll( 'rect' ).attr( 'class', 'less-filter' );
 			t.select( 'text' ).style( 'opacity', 1 );
 		}
 
@@ -178,33 +190,23 @@ tr.draw = function ( data ) {
 		// Parent cells
 		var t = svg.selectAll( 'g.parent' )
 			.transition()
-			.duration( d3.event.altKey ? 7500 : 750 )
+			.duration( 750 )//d3.event.altKey ? 7500 : 750 )
 			.attr( 'transform' , function( d ) {
 				return 'translate(' + x( d.x )  + ',' + y( d.y ) + ')';
 			} );
 
 		// Move trend name to top if zoomed in
 		if ( d.name === 'trends' ) {
-			t.select( 'text' )
-				.attr( 'x', function( d ) {
-					return d.dx / 2;
-				} )
-				.attr( 'y', function( d ) {
-					return d.dy / 2;
-				} )
+			t.select( 'text' ).style( 'opacity', 1 );
+			updateTitle( 'Trend Report');
 		} else {
-			t.select( 'text' )
-				.attr( 'x', function( d ) {
-					return kx * d.dx / 2;
-				} )
-				.attr( 'y', function( d ) {
-					return 40;
-				} );
+			t.select( 'text' ).style( 'opacity', 0 );
+			updateTitle( d.name, root );
 		}
 
 
+
 		node = d;
-		d3.event.stopPropagation();
 	}
 
 	function showFull( d ) {
@@ -212,16 +214,36 @@ tr.draw = function ( data ) {
 			$( '<div>' )
 				.addClass( 'image-container' )
 				.css( 'background-image', 'url("resources/images/' + d.url + '")' )
-				.text( d.designer )
-				.on( 'click', function ( e ) {
-					$( this ).fadeOut( 'fast', function () {
-						$( this ).remove();
-					} );
-					e.stopPropagation();
-					return false;
-				} )
 				.fadeIn()
 		);
+
+		$( '#actionbar span' ).fadeOut();
+		var $h1 = $( '#actionbar h1' );
+		$h1.data( 'old-text', $h1.text() )
+		updateTitle( d.designer, root );
+	}
+
+	function updateTitle( title, zoomData ) {
+		$( '#actionbar h1' ).text( title );
+		if ( zoomData !== undefined ) {
+			$( '#actionbar a' )
+				.fadeIn()
+				.off( 'click' )
+				.on( 'click', function ( e ) {
+					if ( $( '.image-container' ).length > 0 ) {
+						$( '#actionbar h1' ).text( $( '#actionbar h1' ).data( 'old-text' ) );
+						$( '#actionbar span' ).fadeIn();
+						$( '.image-container' ).fadeOut( function () {
+							$( this ).remove();
+						} );
+					} else {
+						zoom( zoomData );
+						e.stopPropagation();
+					}
+				} );
+		} else {
+			$( '#actionbar a' ).fadeOut();
+		}
 	}
 };
 
