@@ -21,11 +21,6 @@ tr.traverseData = function ( data ) {
 			url: trendData.filename,
 			designer: trendData.designer
 		} );
-
-		if ( trendData.designer.indexOf( '.jpg' ) > -1 ) {
-			console.log( trendData.filename );
-		}
-
 	}
 
 	// Move trend to the main tree

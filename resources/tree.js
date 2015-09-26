@@ -6,7 +6,66 @@ tr.draw = function ( data ) {
 		h = $( '#chart' ).height(),
 		x = d3.scale.linear().range([0, w]),
 		y = d3.scale.linear().range([0, h]),
-		color = d3.scale.category20(),
+		color = d3.scale.ordinal().range( [
+			'#393b79',
+			'#5254a3',
+			'#6b6ecf',
+			'#9c9ede',
+			'#637939',
+			'#8ca252',
+			'#b5cf6b',
+			'#cedb9c',
+			'#8c6d31',
+			'#bd9e39',
+			'#e7ba52',
+			'#e7cb94',
+			'#843c39',
+			'#ad494a',
+			'#d6616b',
+			'#e7969c',
+			'#7b4173',
+			'#a55194',
+			'#ce6dbd',
+			'#de9ed6',
+			'#3182bd',
+			'#6baed6',
+			'#9ecae1',
+			'#c6dbef',
+			'#e6550d',
+			'#fd8d3c',
+			'#fdae6b',
+			'#fdd0a2',
+			'#756bb1',
+			'#9e9ac8',
+			'#bcbddc',
+			'#dadaeb',
+			'#636363',
+			'#969696',
+			'#bdbdbd',
+			'#d9d9d9'
+		] ).domain( [
+			'oriental',
+			'statement beauty',
+			'artsy',
+			'checks',
+			'cutout',
+			'statement accessories',
+			'wide pants',
+			'sheer',
+			'oversized',
+			'seventies',
+			'fringes',
+			'crop top',
+			'pleats',
+			'wide pants',
+			'layering',
+			'fall florals',
+			'neon',
+			'drapes',
+			'high low hem',
+			'capes',
+			'typography'
+		] ),
 		root,
 		node;
 
@@ -14,6 +73,8 @@ tr.draw = function ( data ) {
 		.round(false)
 		.size([w, h])
 		.sticky(true)
+		.mode( 'squarify' )
+		.ratio( 2.0 )
 		.value(function(d) { return d.size; });
 
 	var svg = d3.select("#chart").append("div")
