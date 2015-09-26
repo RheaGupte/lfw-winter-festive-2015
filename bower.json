@@ -1,0 +1,20 @@
+{
+  "name": "lfw-winter-festive-2015",
+  "version": "0.0.0",
+  "homepage": "https://github.com/thegirlfromfuss/lfw-winter-festive-2015",
+  "authors": [
+    "Prateek Saxena <prtksxna@gmail.com>"
+  ],
+  "main": "index.html",
+  "license": "GPL",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.5.6"
+  }
+}
