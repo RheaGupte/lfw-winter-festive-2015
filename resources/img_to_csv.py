@@ -7,7 +7,7 @@ mypath = 'images'
 onlyfiles = [ f for f in listdir(mypath) if isfile(join(mypath,f)) ]
 
 # Split filenames to make our data array
-data = []
+data = [ [ "trend", "designer", "score", "filename" ] ]
 for filename in onlyfiles:
 	trend = filename.split( '_' )[ 0 ]
         designer = filename.split( '_' )[ 1 ].split( 'at' )[ 0 ]

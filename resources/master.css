@@ -1,7 +1,17 @@
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#chart {
+	margin: 0;
+	height: 100%;
+	width: 100%;
+}
+
 .chart {
-  display: block;
-  margin: auto;
-  margin-top: 40px;
+	display: block;
+	margin: 0;
 }
 
 text {
@@ -13,7 +23,7 @@ text {
 rect {
 	fill: none;
 	background-size: cover;
-	opacity: 0.3;
+	opacity: 0.6;
 }
 
 rect:hover {

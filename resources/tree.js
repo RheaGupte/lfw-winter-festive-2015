@@ -1,10 +1,15 @@
 window.onload = function () {
 
-var w = 1280 - 80,
-    h = 800 - 180,
+var body = document.body,
+    html = document.documentElement;
+
+var w = Math.max( body.scrollWidth, body.offsetWidth,
+                       html.clientWidth, html.scrollWidth, html.offsetWidth ),
+    h = Math.max( body.scrollHeight, body.offsetHeight,
+                       html.clientHeight, html.scrollHeight, html.offsetHeight ),
     x = d3.scale.linear().range([0, w]),
     y = d3.scale.linear().range([0, h]),
-    color = d3.scale.category10(),
+    color = d3.scale.category20(),
     root,
     node;
 
@@ -25,7 +30,39 @@ var svg = d3.select("#chart").append("div")
     .attr("transform", "translate(.5,.5)");
 
 
-d3.json("resources/flare.json", function(data) {
+d3.csv("resources/trends.csv", function(data) {
+	var tree = {
+		name: 'trends',
+		children: []
+	};
+	var trends = {};
+	for ( trend in data ) {
+		var trendData = data[ trend ];
+		trends[ trendData.trend ] = trends[ trendData.trend ] || [];
+		trends[ trendData.trend ].push( {
+			name: trendData.trend,
+			size: trendData.score,
+			url: trendData.filename,
+			designer: trendData.designer
+		} );
+	}
+
+	for ( trend in trends ) {
+		var looksInTrend = trends[ trend ];
+		var child = {
+			name: trend,
+			children: []
+		}
+		for ( var lookIndex in looksInTrend ) {
+			var look = looksInTrend[ lookIndex ];
+			child.children.push( look );
+		}
+		tree.children.push( child );
+	}
+	draw( tree );
+} );
+
+var draw = function ( data ) {
   node = root = data;
 
   var nodes = treemap.nodes(root)
@@ -38,18 +75,36 @@ d3.json("resources/flare.json", function(data) {
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
       .on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
 
-	cell.append("svg:image")
+	var images = cell.append("svg:image")
 		.attr("width", function(d) { return d.dx - 1; })
 		.attr("height", function(d) { return d.dy - 1; })
 		.attr("preserveAspectRatio", "xMidYMid slice" )
 		.attr("xlink:href", function(d) {
-			return "resources/images/" + d.url + "";
-		} )
-//		.style("fill", function(d) { return color(d.parent.name); });
+			return "resources/images_small/" + d.url;
+		} );
 
 	cell.append("svg:rect")
 		.attr("width", function(d) { return d.dx - 1; })
 		.attr("height", function(d) { return d.dy - 1; })
+		.on( 'mouseover', function ( d ) {
+			if ( this.getAttribute( "width" ) < 300 ) {
+				return false;
+			}
+			var image = images.filter( function ( image ) {
+				return image.url === d.url
+			} );
+			image.attr("xlink:href", function(d) {
+				return "resources/images/" + d.url;
+			} );
+		} )
+		.on( 'mouseout', function ( d ) {
+			var image = images.filter( function ( image ) {
+				return image.url === d.url
+			} );
+			image.attr("xlink:href", function(d) {
+				return "resources/images_small/" + d.url;
+			} );
+		} )
 		.style("fill", function(d) { return color(d.parent.name); });
 
 
@@ -67,7 +122,7 @@ d3.json("resources/flare.json", function(data) {
     treemap.value(this.value == "size" ? size : count).nodes(root);
     zoom(node);
   });
-});
+};
 
 function size(d) {
   return d.size;
@@ -86,9 +141,10 @@ function zoom(d) {
       .duration(d3.event.altKey ? 7500 : 750)
       .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
 
-  t.select("image")
-      .attr("width", function(d) { return kx * d.dx - 1; })
-      .attr("height", function(d) { return ky * d.dy - 1; })
+	t.select("image")
+		.attr("width", function(d) { return kx * d.dx - 1; })
+		.attr("height", function(d) { return ky * d.dy - 1; });
+
 
   t.select("rect")
       .attr("width", function(d) { return kx * d.dx - 1; })
