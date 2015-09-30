@@ -7,6 +7,26 @@ tr.draw = function ( data ) {
 		x = d3.scale.linear().range([0, w]),
 		y = d3.scale.linear().range([0, h]),
 		color = d3.scale.ordinal().range( [
+			'#BEE6CE', // Green
+			'#1E1221', // Black
+			'#DBC7EF', // Purple
+			'#A0A98B', // Olive
+			'#FCE2DA' //Pink
+		] ).domain( [
+			'all black',
+			'geometric',
+			'oversized',
+			'oriental',
+			'high neck',
+			'off shoulder',
+			'psychedelic',
+			'high low hem',
+			'minimalism',
+			'neon',
+			'pleats',
+			'off shoulder',
+		] ),
+/*		color = d3.scale.ordinal().range( [
 			'#393b79',
 			'#5254a3',
 			'#6b6ecf',
@@ -68,7 +88,7 @@ tr.draw = function ( data ) {
 			'pastel',
 			'sports luxe',
 			'long coat'
-		] ),
+		] ),*/
 		root,
 		node;
 
@@ -77,7 +97,7 @@ tr.draw = function ( data ) {
 		.size([w, h])
 		.sticky(true)
 		.mode( 'squarify' )
-		.ratio( 2.0 )
+		.ratio( 0.8 )
 		.value(function(d) { return d.size; });
 
 	var svg = d3.select("#chart").append("div")
@@ -159,7 +179,8 @@ tr.draw = function ( data ) {
 
 			}
 		} )
-		.style("fill", function(d) { return color(d.parent.name); });
+		.style("fill", function(d) { return color(d.parent.name); })
+		.style("stroke", function(d) { return color(d.parent.name); });
 
 
 	cell.append("svg:text")
@@ -194,6 +215,13 @@ tr.draw = function ( data ) {
 				return;
 			}
 			return d.name;
+		} )
+		.style( 'fill', function ( d ) {
+			if ( color( d.name ) !== '#1E1221' ) {
+				return '#000';
+			} else {
+				return '#fff';
+			}
 		} )
 		.style( 'opacity', 1 );
 
