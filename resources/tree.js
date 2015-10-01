@@ -207,6 +207,14 @@ tr.draw = function ( data ) {
 				return 'translate(' + x( d.x ) + ',' + y( d.y ) + ')';
 		} );
 
+		// Show designer name if zoomed in
+		// Reduce color filter if zoomed in
+		if ( d.name === 'trends' ) {
+			t.select( 'text' ).style( 'opacity', 0 );
+		} else {
+			t.select( 'text' ).style( 'opacity', 1 );
+		}
+
 		t.select("image")
 			.attr("width", function(d) { return kx * d.dx; })
 			.attr("height", function(d) { return ky * d.dy; });
@@ -223,14 +231,6 @@ tr.draw = function ( data ) {
 			.attr( 'y', function( d ) {
 				return ky * d.dy / 2;
 			} )
-
-		// Show designer name if zoomed in
-		// Reduce color filter if zoomed in
-		if ( d.name === 'trends' ) {
-			t.select( 'text' ).style( 'opacity', 0 );
-		} else {
-			t.select( 'text' ).style( 'opacity', 1 );
-		}
 
 
 		// Parent cells
@@ -256,21 +256,44 @@ tr.draw = function ( data ) {
 	}
 
 	function showFull( d ) {
+
+		// Get adjacent images
+		var allLooks = d.parent.children;
+		var nextIndex = allLooks.indexOf( d ) + 1;
+		var prevIndex = allLooks.indexOf( d ) - 1;
+		if ( nextIndex === allLooks.length ) {
+			nextIndex = 0;
+		}
+		if ( prevIndex < 0 ) {
+			prevIndex = allLooks.length - 1;
+		}
+
+		var nextImage = allLooks[ nextIndex ]
+		var prevImage = allLooks[ prevIndex ]
+
 		$( 'body' ).append(
 			$( '<div>' )
 				.addClass( 'image-container' )
 				.css( 'background-image', 'url("resources/images/' + d.url + '")' )
 				.fadeIn()
+				.append(
+					$( '<a>' ).addClass( 'prev' ).html( '&#9664;' ).on( 'click', function () {
+						showFull( prevImage );
+					} ),
+					$( '<a>' ).addClass( 'next' ).html( '&#9654;' ).on( 'click', function () {
+						showFull( nextImage );
+					} )
+				)
 		);
 
 		$( '#actionbar span' ).fadeOut();
 		var $h1 = $( '#actionbar h1' );
 		$h1.data( 'old-text', $h1.text() )
-		updateTitle( d.designer, root );
+		updateTitle( d.name + ' : ' + d.designer, root );
 	}
 
 	function updateTitle( title, zoomData ) {
-		$( '#actionbar h1' ).text( title );
+		$( '#actionbar h1' ).html( title );
 		if ( zoomData !== undefined ) {
 			$( '#actionbar a' )
 				.fadeIn()

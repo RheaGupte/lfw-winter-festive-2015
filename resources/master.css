@@ -1,7 +1,7 @@
 body {
 	margin: 0;
 	padding: 0;
-	font-family: 'Didot';
+	font-family: 'freight-big-pro', 'Didot', Georgia, sans-serif;
 }
 
 #actionbar {
@@ -16,8 +16,15 @@ body {
 #actionbar h1 {
 	display: inline-block;
 	text-transform: capitalize;
+	font-weight: normal;
 	margin: 0;
 	font-size: 1em;
+}
+
+#actionbar h1 span {
+	font-style: none;
+	font-size: 0.6em;
+	color: #eee;
 }
 
 #actionbar span {
@@ -93,6 +100,35 @@ div.image-container {
 	background-position: center center;
 	background-repeat: no-repeat;
 }
+
+div.image-container a {
+	display: block;
+	position: absolute;
+	color: #fff;
+	cursor: pointer;
+	font-size: 1.5em;
+	font-weight: bold;
+	font-family: Helvetica, Arial, sans-serif;
+	background: #111;
+	padding: 20px;
+	width: 40px;
+	text-align: center;
+}
+
+div.image-container a:hover {
+	background: #333;
+}
+
+div.image-container a.prev {
+	top: 50%;
+	left: 0;
+}
+
+div.image-container a.next {
+	top: 50%;
+	right: 0;
+}
+
 
 @media only screen and (max-device-width: 480px) {
 	#actionbar {
