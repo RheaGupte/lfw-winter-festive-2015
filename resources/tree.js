@@ -187,6 +187,19 @@ tr.draw = function ( data ) {
 			x.domain([d.x, d.x + d.dx]);
 			y.domain([d.y, d.y + d.dy]);
 
+		// Prefetch images
+		for( var lookIndex in d.children ) {
+			var look = d.children[ lookIndex ];
+
+			// Check if we are on the designer grid
+			if ( look.url === undefined ) {
+				break;
+			}
+
+			var im = new Image();
+			im.src = 'resources/images/' + look.url;
+		}
+
 		var t = svg.selectAll( 'g.cell' )
 			.transition()
 			.duration( 750 )//d3.event.altKey ? 7500 : 750 )
