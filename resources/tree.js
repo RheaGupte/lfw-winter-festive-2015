@@ -288,7 +288,7 @@ tr.draw = function ( data ) {
 
 		$( '#actionbar span' ).fadeOut();
 		var $h1 = $( '#actionbar h1' );
-		$h1.data( 'old-text', $h1.text() )
+		$h1.data( 'old-text', d.name )
 		updateTitle( d.name + ' : ' + d.designer, root );
 	}
 
