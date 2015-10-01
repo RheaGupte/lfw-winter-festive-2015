@@ -26,69 +26,6 @@ tr.draw = function ( data ) {
 			'pleats',
 			'off shoulder',
 		] ),
-/*		color = d3.scale.ordinal().range( [
-			'#393b79',
-			'#5254a3',
-			'#6b6ecf',
-			'#9c9ede',
-			'#637939',
-			'#8ca252',
-			'#b5cf6b',
-			'#cedb9c',
-			'#8c6d31',
-			'#bd9e39',
-			'#e7ba52',
-			'#e7cb94',
-			'#843c39',
-			'#ad494a',
-			'#d6616b',
-			'#e7969c',
-			'#7b4173',
-			'#a55194',
-			'#ce6dbd',
-			'#de9ed6',
-			'#3182bd',
-			'#6baed6',
-			'#9ecae1',
-			'#c6dbef',
-			'#e6550d',
-			'#fd8d3c',
-			'#fdae6b',
-			'#fdd0a2',
-			'#756bb1',
-			'#9e9ac8',
-			'#bcbddc',
-			'#dadaeb',
-			'#636363',
-			'#969696',
-			'#bdbdbd',
-			'#d9d9d9'
-		] ).domain( [
-			'psychedelic',
-			'statement beauty',
-			'artsy',
-			'checks',
-			'cutout',
-			'statement accessories',
-			'wide pants',
-			'sheer',
-			'oversized',
-			'seventies',
-			'fringes',
-			'crop top',
-			'pleats',
-			'wide pants',
-			'layering',
-			'fall florals',
-			'neon',
-			'drapes',
-			'high low hem',
-			'capes',
-			'typography',
-			'pastel',
-			'sports luxe',
-			'long coat'
-		] ),*/
 		root,
 		node;
 
@@ -223,6 +160,12 @@ tr.draw = function ( data ) {
 				return '#fff';
 			}
 		} )
+		.style( 'font-size', function ( d ) {
+			d.w = this.getComputedTextLength() + 10;
+			if ( d.w  > d.dx ) {
+				return '8px';
+			}
+		} )
 		.style( 'opacity', 1 );
 
 
@@ -271,10 +214,8 @@ tr.draw = function ( data ) {
 		// Show designer name if zoomed in
 		// Reduce color filter if zoomed in
 		if ( d.name === 'trends' ) {
-			svg.selectAll( 'rect' ).attr( 'class', 'more-filter' );
 			t.select( 'text' ).style( 'opacity', 0 );
 		} else {
-			svg.selectAll( 'rect' ).attr( 'class', 'less-filter' );
 			t.select( 'text' ).style( 'opacity', 1 );
 		}
 

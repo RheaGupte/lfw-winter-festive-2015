@@ -50,7 +50,7 @@ body {
 }
 
 text.parent-text {
-	font-size: 11px;
+	font-size: 12px;
 	text-transform: uppercase;
 	fill: #fff;
 	pointer-events: none;
@@ -75,15 +75,6 @@ rect {
 
 image {
 	shape-rendering: crispEdges;
-}
-
-
-rect.more-filter {
-	opacity: 1;
-}
-
-rect.less-filter {
-	opacity: 0.3;
 }
 
 rect:hover {
