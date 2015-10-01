@@ -67,7 +67,7 @@ text.child-text {
 rect {
 	fill: none;
 	background-size: cover;
-	opacity: 1;
+	opacity: 0.96;
 	shape-rendering: crispEdges;
 	stroke: #000;
 	stroke-width: 1px;

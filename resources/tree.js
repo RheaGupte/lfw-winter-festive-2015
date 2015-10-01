@@ -293,6 +293,4 @@ tr.draw = function ( data ) {
 	}
 };
 
-
-
 } ( d3, tr, document, jQuery ) );
