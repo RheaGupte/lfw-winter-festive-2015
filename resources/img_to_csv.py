@@ -3,7 +3,7 @@ from os import listdir
 from os.path import isfile, join
 
 # Get list of files from images/ folder
-mypath = 'images'
+mypath = 'images_fashion'
 onlyfiles = [ f for f in listdir(mypath) if isfile(join(mypath,f)) ]
 
 # Split filenames to make our data array

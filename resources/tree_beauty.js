@@ -75,7 +75,7 @@ tr.draw = function ( data ) {
 		.attr("height", function(d) { return d.dy; })
 		.attr("preserveAspectRatio", "xMidYMid slice" )
 		.attr("xlink:href", function(d) {
-			return "resources/images_fashion_small/" + d.url;
+			return "resources/images_beauty_small/" + d.url;
 		} );
 
 	cell.append("svg:rect")
@@ -83,14 +83,14 @@ tr.draw = function ( data ) {
 		.attr("height", function(d) { return d.dy; })
 		.on( 'mouseover', function ( d ) {
 			// TODO
-			if ( this.getAttribute( "width" ) < 100 ) {
+			if ( this.getAttribute( "width" ) < 150 ) {
 				return false;
 			}
 			var image = images.filter( function ( image ) {
 				return image.url === d.url
 			} );
 			image.attr("xlink:href", function(d) {
-				return "resources/images_fashion/" + d.url;
+				return "resources/images_beauty/" + d.url;
 			} );
 		} )
 		.on( 'mouseout', function ( d ) {
@@ -98,7 +98,7 @@ tr.draw = function ( data ) {
 				return image.url === d.url
 			} );
 			image.attr("xlink:href", function(d) {
-				return "resources/images_fashion_small/" + d.url;
+				return "resources/images_beauty_small/" + d.url;
 			} );
 		} )
 		.on( 'click', function ( d ) {
@@ -197,7 +197,7 @@ tr.draw = function ( data ) {
 			}
 
 			var im = new Image();
-			im.src = 'resources/images_fashion/' + look.url;
+			im.src = 'resources/images_beauty/' + look.url;
 		}
 
 		var t = svg.selectAll( 'g.cell' )
@@ -274,7 +274,7 @@ tr.draw = function ( data ) {
 		$( 'body' ).append(
 			$( '<div>' )
 				.addClass( 'image-container' )
-				.css( 'background-image', 'url("resources/images_fashion/' + d.url + '")' )
+				.css( 'background-image', 'url("resources/images_beauty/' + d.url + '")' )
 				.fadeIn()
 				.append(
 					$( '<a>' ).addClass( 'prev' ).html( '&#9664;' ).on( 'click', function () {

@@ -40,7 +40,6 @@ body {
 	font-weight: bold;
 	font-family: Helvetica, Arial, sans-serif;
 	margin-top: -8px;
-	display: none;
 }
 
 #chart {
@@ -129,6 +128,41 @@ div.image-container a.next {
 	right: 0;
 }
 
+.dark {
+	background: #000;
+	color: #fff;
+}
+
+.dark a {
+	color: #fff;
+	text-decoration: none;
+}
+
+.dark a:hover {
+	color: #A0A98B;
+}
+
+#choice {
+	position: absolute;
+	top: 40%;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	font-size: 4em;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+#choice span {
+	font-weight: 800;
+}
+
+#choice p {
+	text-align: center;
+	font-size: 0.3em;
+	text-transform: none;
+	margin: 0;
+}
 
 @media only screen and (max-device-width: 480px) {
 	#actionbar {
